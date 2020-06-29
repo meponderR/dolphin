@@ -61,7 +61,7 @@ jobs:
           
           EXPORT_UUID=`uuidgen`
           EXPORT_PATH="/tmp/DolphiniOS-$EXPORT_UUID"
-          DOLPHIN_EXPORT_PATH="$EXPORT_PATH/dolphin_deb_root/"
+          DOLPHIN_EXPORT_PATH="$EXPORT_PATH/dolphin_deb_root"
           CONTROL_FILE=DolphiniOS/BuildResources/DebFiles/control.in
           APPLICATION_DESTINATION_PATH=$DOLPHIN_EXPORT_PATH/Applications/DolphiniOS.app
           BUNDLE_ID="me.oatmealdome.DolphiniOS"
