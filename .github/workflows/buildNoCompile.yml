@@ -68,16 +68,21 @@ jobs:
           VERSION_STRING=$(cat DolphiniOS.xcodeproj/project.pbxproj | grep -m1 'MARKETING_VERSION' | cut -d'=' -f2 | tr -d ';' | tr -d ' ')
           BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "DolphiniOS/Info.plist")
          
+          echo "Copy to tmp" 
           cp -r "DolphiniOS-jb.xcarchive/Products/Applications" $APPLICATION_DESTINATION_PATH
+          echo "Copy deb files"
           cp $ROOT_SRC_DIR/DolphiniOS/DolphiniOS/BuildResources/DebFiles/postinst.sh $DOLPHIN_EXPORT_PATH/DEBIAN/postinst
           cp $ROOT_SRC_DIR/DolphiniOS/DolphiniOS/BuildResources/DebFiles/postrm.sh $DOLPHIN_EXPORT_PATH/DEBIAN/postrm
+          echo "Chmod"
           chmod -R 755 $DOLPHIN_EXPORT_PATH/DEBIAN/*
+          echo "Replace text"
           sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" $CONTROL_FILE > $DOLPHIN_EXPORT_PATH/DEBIAN/control
           plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" $APPLICATION_DESTINATION_PATH/Info.plist
-          
+          echo "dpkg"
           dpkg-deb -b $DOLPHIN_EXPORT_PATH
           mv $EXPORT_PATH/dolphin_deb_root.deb $EXPORT_PATH/DolphiniOS.deb
-          
+          echo "Done"
+
           ::set-env name=JB_DEB_PATH::$EXPORT_PATH
            
       working-directory: ./Source/iOS/DolphiniOS
