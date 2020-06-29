@@ -21,7 +21,7 @@ jobs:
       
     - name: Install dependencies
       run: |
-        brew install ninja bartycrouch dpkg s3cmd libmagic dos2unix
+        brew install ninja bartycrouch dpkg libmagic
         pip3 install polib python-magic
         pod install
       working-directory: ./Source/iOS/DolphiniOS
@@ -60,7 +60,7 @@ jobs:
           xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-jb.xcarchive -configuration "Debug (Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
           
           EXPORT_UUID=`uuidgen`
-          EXPORT_PATH="/tmp/DolphiniOS-$EXPORT_UUID"
+          EXPORT_PATH="tmp/DolphiniOS-$EXPORT_UUID"
           DOLPHIN_EXPORT_PATH="$EXPORT_PATH/dolphin_deb_root"
           CONTROL_FILE=DolphiniOS/BuildResources/DebFiles/control.in
           APPLICATION_DESTINATION_PATH=$DOLPHIN_EXPORT_PATH/Applications
@@ -69,12 +69,12 @@ jobs:
           BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "DolphiniOS/Info.plist")
          
           echo "Copy to tmp" 
-          sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications" $APPLICATION_DESTINATION_PATH
+          sudo cp -rf "DolphiniOS-jb.xcarchive/Products/Applications" $APPLICATION_DESTINATION_PATH
           echo "Copy deb files"
           sudo cp $ROOT_SRC_DIR/DolphiniOS/DolphiniOS/BuildResources/DebFiles/postinst.sh $DOLPHIN_EXPORT_PATH/DEBIAN/postinst
           sudo cp $ROOT_SRC_DIR/DolphiniOS/DolphiniOS/BuildResources/DebFiles/postrm.sh $DOLPHIN_EXPORT_PATH/DEBIAN/postrm
           echo "Chmod"
-          sudo chmod -R 755 $DOLPHIN_EXPORT_PATH/DEBIAN/*
+          sudo chmod -Rf 755 $DOLPHIN_EXPORT_PATH/DEBIAN/*
           echo "Replace text"
           sudo sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" $CONTROL_FILE > $DOLPHIN_EXPORT_PATH/DEBIAN/control
           sudo plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" $APPLICATION_DESTINATION_PATH/Info.plist
