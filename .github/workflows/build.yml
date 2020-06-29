@@ -79,7 +79,7 @@ jobs:
         cp -R "${{ github.workspace }}/build-Xcode/Release (Patreon)-iphoneos/DolphiniOS.app" ${{ env.ARCHIVE_PATH }}/Products/Applications/
         Source/iOS/DolphiniOS/DolphiniOS/BuildResources/BuildScripts/BuildDebs.sh build.keychain JB_PATREON_DEB_PATH
         
-    - name: Upload
+    - name: Upload to S3
       env:
         S3CMD_ARGS: "--access_key=${{ secrets.SPACES_KEY }} --secret_key=${{ secrets.SPACES_SECRET }} --host=${{ secrets.SPACES_ENDPOINT }} --host-bucket=%\\(bucket\\)s.${{ secrets.SPACES_ENDPOINT }}"
         BUCKET_ROOT_PATH: "s3://wii-sports/dolphinios/ci"
@@ -87,6 +87,12 @@ jobs:
         s3cmd put ${{ env.JB_DEB_PATH }}/DolphiniOS.deb ${{ env.BUCKET_ROOT_PATH }}/DolphiniOS-JB-${{ github.run_number }}.deb ${{ env.S3CMD_ARGS }}
         s3cmd put ${{ env.JB_PATREON_DEB_PATH }}/DolphiniOS.deb ${{ env.BUCKET_ROOT_PATH }}/DolphiniOS-JB-Patreon-${{ github.run_number }}.deb ${{ env.S3CMD_ARGS }}
   
+    - name: Upload to Github actions
+      uses: actions/upload-artifact@v2
+      with:	
+        name: 'Artifacts-V2'	
+        path: '${{ env.JB_DEB_PATH }}/DolphiniOS.deb'
+
   build-njb:
     runs-on: macos-10.15
     
@@ -159,10 +165,16 @@ jobs:
         cp -R "${{ github.workspace }}/build-Xcode/Release (Patreon Non-Jailbroken)-iphoneos/DolphiniOS.app" ${{ env.ARCHIVE_PATH }}/Products/Applications/
         Source/iOS/DolphiniOS/DolphiniOS/BuildResources/BuildScripts/BuildIpa.sh build.keychain NJB_PATREON_IPA_PATH
         
-    - name: Upload
+    - name: Upload to S3
       env:
         S3CMD_ARGS: "--access_key=${{ secrets.SPACES_KEY }} --secret_key=${{ secrets.SPACES_SECRET }} --host=${{ secrets.SPACES_ENDPOINT }} --host-bucket=%\\(bucket\\)s.${{ secrets.SPACES_ENDPOINT }}"
         BUCKET_ROOT_PATH: "s3://wii-sports/dolphinios/ci"
       run: |
         s3cmd put ${{ env.NJB_IPA_PATH }}/DolphiniOS-NJB.ipa ${{ env.BUCKET_ROOT_PATH }}/DolphiniOS-NJB-${{ github.run_number }}.ipa ${{ env.S3CMD_ARGS }}
         s3cmd put ${{ env.NJB_PATREON_IPA_PATH }}/DolphiniOS-NJB.ipa ${{ env.BUCKET_ROOT_PATH }}/DolphiniOS-NJB-Patreon-${{ github.run_number }}.ipa ${{ env.S3CMD_ARGS }}
+
+    - name: Upload to Github
+      uses: actions/upload-artifact@v2
+      with:	
+        name: 'Artifacts-V2'	
+        path: '${{ env.NJB_IPA_PATH }}/DolphiniOS-NJB.ipa'
