@@ -21,10 +21,8 @@ jobs:
       
     - name: Install dependencies
       run: |
-        brew install cmake ninja bartycrouch python ldid
-        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-        python get-pip.py
-        /usr/local/bin/python3 -m pip install --upgrade polib
+        brew install ninja bartycrouch dpkg s3cmd libmagic dos2unix
+        pip3 install polib python-magic
         pod install
       working-directory: ./Source/iOS/DolphiniOS
 
@@ -59,27 +57,33 @@ jobs:
       
     - name: Compile jailbroken App
       run: |
-           xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-jb.xcarchive -configuration "Debug (Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+          xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-jb.xcarchive -configuration "Debug (Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+          
+          EXPORT_UUID=`uuidgen`
+          EXPORT_PATH="/tmp/DolphiniOS-$EXPORT_UUID"
+          DOLPHIN_EXPORT_PATH="$EXPORT_PATH/dolphin_deb_root/"
+          CONTROL_FILE=DolphiniOS/BuildResources/DebFiles/control.in
+          APPLICATION_DESTINATION_PATH=$DOLPHIN_EXPORT_PATH/Applications/DolphiniOS.app
+          BUNDLE_ID="me.oatmealdome.DolphiniOS"
+          VERSION_STRING=$(cat DolphiniOS.xcodeproj/project.pbxproj | grep -m1 'MARKETING_VERSION' | cut -d'=' -f2 | tr -d ';' | tr -d ' ')
+          BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "DolphiniOS/Info.plist")
+         
+          cp -r "$ARCHIVE_PATH/Products/Applications/DolphiniOS.app" $APPLICATION_DESTINATION_PATH
+          cp $ROOT_SRC_DIR/DolphiniOS/DolphiniOS/BuildResources/DebFiles/postinst.sh $DOLPHIN_EXPORT_PATH/DEBIAN/postinst
+          cp $ROOT_SRC_DIR/DolphiniOS/DolphiniOS/BuildResources/DebFiles/postrm.sh $DOLPHIN_EXPORT_PATH/DEBIAN/postrm
+          chmod -R 755 $DOLPHIN_EXPORT_PATH/DEBIAN/*
+          sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" $CONTROL_FILE > $DOLPHIN_EXPORT_PATH/DEBIAN/control
+          plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" $APPLICATION_DESTINATION_PATH/Info.plist
+          
+          dpkg-deb -b $DOLPHIN_EXPORT_PATH
+          mv $EXPORT_PATH/dolphin_deb_root.deb $EXPORT_PATH/DolphiniOS.deb
+          
+          ::set-env name=JB_DEB_PATH::$EXPORT_PATH
            
-           # cp -r "DolphiniOS-jb.xcarchive/Products/Applications/DolphiniOS.app" APP_DEST/
-           # cp DolphiniOS/BuildResources/DebFiles/postinst.sh DEB/DEBIAN/postinst
-           # cp DolphiniOS/BuildResources/DebFiles/postrm.sh DEB/DEBIAN/postrm
-           # chmod -R 755 DEB/DEBIAN/*
-           # sed "s/VERSION_NUMBER/$MARKETING_VERSION-$BUILD_NUMBER/g" DolphiniOS/BuildResources/DebFiles/control.in > DEB/DEBIAN/control
-           
-           # plutil -replace "CFBundleIdentifier" -string "me.oatmealdome.DolphiniOS" DolphiniOS-jb.xcarchive/Products/Applications/DolphiniOS.app/Info.plist
-           # xcrun -sdk iphoneos clang -arch $(ARCHS) main.m -o csdbgd -framework IOKit -framework CoreFoundation -framework Foundation -O2
-           
-           # cp -r DolphiniOS-jb.xcarchive/Products/Applications/ Payload/
-           # zip -qr ipas/Dolphin-jb.ipa Payload
-           # rm -r Payload/
-           
-           cd /tmp/
-           ls
       working-directory: ./Source/iOS/DolphiniOS
       
-    - name: Upload jailbroken ipa
+    - name: Upload jailbroken deb
       uses: actions/upload-artifact@v2
       with:
         name: DolphiniOS Beta (Jailbroken)
-        path: Source/iOS/DolphiniOS/DEBEX/
+        path: ${JB_DEB_PATH}
