@@ -63,12 +63,12 @@ jobs:
           EXPORT_PATH="/tmp/DolphiniOS-$EXPORT_UUID"
           DOLPHIN_EXPORT_PATH="$EXPORT_PATH/dolphin_deb_root"
           CONTROL_FILE=DolphiniOS/BuildResources/DebFiles/control.in
-          APPLICATION_DESTINATION_PATH=$DOLPHIN_EXPORT_PATH/Applications/DolphiniOS.app
+          APPLICATION_DESTINATION_PATH=$DOLPHIN_EXPORT_PATH/Applications
           BUNDLE_ID="me.oatmealdome.DolphiniOS"
           VERSION_STRING=$(cat DolphiniOS.xcodeproj/project.pbxproj | grep -m1 'MARKETING_VERSION' | cut -d'=' -f2 | tr -d ';' | tr -d ' ')
           BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "DolphiniOS/Info.plist")
          
-          cp -r "DolphiniOS-jb.xcarchive/Products/Applications/DolphiniOS.app" $APPLICATION_DESTINATION_PATH
+          cp -r "DolphiniOS-jb.xcarchive/Products/Applications" $APPLICATION_DESTINATION_PATH
           cp $ROOT_SRC_DIR/DolphiniOS/DolphiniOS/BuildResources/DebFiles/postinst.sh $DOLPHIN_EXPORT_PATH/DEBIAN/postinst
           cp $ROOT_SRC_DIR/DolphiniOS/DolphiniOS/BuildResources/DebFiles/postrm.sh $DOLPHIN_EXPORT_PATH/DEBIAN/postrm
           chmod -R 755 $DOLPHIN_EXPORT_PATH/DEBIAN/*
