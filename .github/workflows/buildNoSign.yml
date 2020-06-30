@@ -62,9 +62,10 @@ jobs:
           BUNDLE_ID="me.oatmealdome.DolphiniOS"
           VERSION_STRING=$(cat DolphiniOS.xcodeproj/project.pbxproj | grep -m1 'MARKETING_VERSION' | cut -d'=' -f2 | tr -d ';' | tr -d ' ')
           BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "DolphiniOS/Info.plist")
-          ls
-          chmod -R 755 ./
-          echo "Copy to tmp" 
+          
+          
+          echo "Copy to DEB dir" 
+          mkdir "JBEX"
           sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications" "JBEX/Applications"
           echo "Copy deb files"
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
