@@ -76,10 +76,11 @@ jobs:
           sudo plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" JBEX/Applications/DolphiniOS.app/Info.plist
           echo "dpkg"
           sudo dpkg-deb -b JBEX
-          sudo mv dolphin_deb_root.deb DolphiniOS.deb
+          ls
+          sudo mv JBEX.deb DolphiniOS.deb
           echo "Done"
 
-          ::set-env name=JB_DEB_PATH::JBEX/
+          ::set-env name=JB_DEB_PATH::JBEX.deb
            
       working-directory: ./Source/iOS/DolphiniOS
       
