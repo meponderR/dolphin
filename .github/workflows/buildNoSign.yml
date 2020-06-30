@@ -59,17 +59,12 @@ jobs:
       run: |
           xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-jb.xcarchive -configuration "Debug (Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
           
-          EXPORT_UUID=`uuidgen`
-          EXPORT_PATH="JBEX/"
-          DOLPHIN_EXPORT_PATH="$EXPORT_PATH/dolphin_deb_root"
-          CONTROL_FILE=DolphiniOS/BuildResources/DebFiles/control.in
-          APPLICATION_DESTINATION_PATH=$DOLPHIN_EXPORT_PATH/Applications
           BUNDLE_ID="me.oatmealdome.DolphiniOS"
           VERSION_STRING=$(cat DolphiniOS.xcodeproj/project.pbxproj | grep -m1 'MARKETING_VERSION' | cut -d'=' -f2 | tr -d ';' | tr -d ' ')
           BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "DolphiniOS/Info.plist")
          
           echo "Copy to tmp" 
-          sudo cp -rf "DolphiniOS-jb.xcarchive/Products/Applications/" "JBEX/Applications/"
+          sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications" "JBEX/Applications"
           echo "Copy deb files"
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
