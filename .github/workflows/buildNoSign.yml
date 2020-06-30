@@ -76,11 +76,9 @@ jobs:
           sudo plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" JBEX/Applications/DolphiniOS.app/Info.plist
           echo "dpkg"
           sudo dpkg-deb -b JBEX
-          ls
-          sudo mv JBEX.deb DolphiniOS.deb
+          sudo mv JBEX.deb DolphiniOS-$VERSION_STRING-$BUILD_NUMBER.deb
+          echo "::set-env name=DebName::DolphiniOS-$VERSION_STRING-$BUILD_NUMBER.deb"
           echo "Done"
-
-          ::set-env name=JB_DEB_PATH::JBEX.deb
            
       working-directory: ./Source/iOS/DolphiniOS
       
@@ -88,4 +86,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: DolphiniOS Beta (Jailbroken)
-        path: ${JB_DEB_PATH}
+        path: ./Source/iOS/DolphiniOS/${DebName}
