@@ -2,9 +2,9 @@ name: Dolphin-CI
 
 on:
   push:
-    branches: [ meponderR-patch-1 ]
+    branches: [ meponderR-patch-2 ]
   pull_request:
-    branches: [ meponderR-patch-1 ]
+    branches: [ meponderR-patch-2 ]
 
 jobs:
   ios:
