@@ -70,7 +70,7 @@ jobs:
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
           echo "Chmod"
-          sudo chmod -R 755 $DOLPHIN_EXPORT_PATH/DEBIAN/*
+          sudo chmod -R 755 JBEX/DEBIAN/*
           echo "Replace text"
           sudo sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" DolphiniOS/BuildResources/DebFiles/control.in > JBEX/DEBIAN/control
           sudo plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" JBEX/Info.plist
