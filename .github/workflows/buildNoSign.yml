@@ -16,9 +16,6 @@ jobs:
     - name: Checkout Dolphin
       uses: actions/checkout@v2.1.0
       
-    - name: Checkout submodules
-      run: git submodule update --init --recursive
-      
     - name: Install dependencies
       run: |
         brew install ninja bartycrouch dpkg libmagic
@@ -68,6 +65,8 @@ jobs:
           mkdir "JBEX"
           sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications" "JBEX/Applications"
           echo "Copy deb files"
+          touch JBEX/DEBIAN/postinst
+          touch JBEX/DEBIAN/postrm
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
           echo "Chmod"
