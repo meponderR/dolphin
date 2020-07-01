@@ -18,7 +18,7 @@ jobs:
       
     - name: Install dependencies
       run: |
-        brew install ninja bartycrouch dpkg libmagic
+        brew install ninja bartycrouch dpkg libmagic ldid
         pip3 install polib python-magic
         pod install
       working-directory: ./Source/iOS/DolphiniOS
