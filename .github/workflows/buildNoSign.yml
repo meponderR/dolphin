@@ -34,23 +34,23 @@ jobs:
            mkdir ipas
       working-directory: ./Source/iOS/DolphiniOS
 
-#    - name: Compile non-jailbroken ipa
-#      run: |
-#           xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-njb.xcarchive -configuration "Debug (Non-Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-#           cp -r DolphiniOS-njb.xcarchive/Products/Applications/ Payload/
-#           echo "Start Codesign"
-#           ldid -EDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/
-#           ldid -EDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/Frameworks/*
-#           echo "End Codesign"
-#           zip -q -r ipas/Dolphin-njb.ipa Payload
-#           rm -r Payload/
-#      working-directory: ./Source/iOS/DolphiniOS
-#      
-#    - name: Upload non-jailbroken ipa
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: DolphiniOS Beta (Non-Jailbroken)
-#        path: Source/iOS/DolphiniOS/ipas/Dolphin-njb.ipa
+    - name: Compile non-jailbroken ipa
+      run: |
+           xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-njb.xcarchive -configuration "Debug (Non-Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+           cp -r DolphiniOS-njb.xcarchive/Products/Applications/ Payload/
+           echo "Start Codesign"
+           ldid -EDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/
+           ldid -EDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/Frameworks/*
+           echo "End Codesign"
+           zip -q -r ipas/Dolphin-njb.ipa Payload
+           rm -r Payload/
+      working-directory: ./Source/iOS/DolphiniOS
+      
+    - name: Upload non-jailbroken ipa
+      uses: actions/upload-artifact@v2
+      with:
+        name: DolphiniOS Beta (Non-Jailbroken)
+        path: Source/iOS/DolphiniOS/ipas/Dolphin-njb.ipa
       
     - name: Compile jailbroken App
       run: |
@@ -65,12 +65,12 @@ jobs:
           mkdir -p "JBEX/DEBIAN"
           sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications" "JBEX/Applications"
           echo "Copy deb files"
-          # touch JBEX/DEBIAN/postinst
-          # touch JBEX/DEBIAN/postrm
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
-          echo "Chmod"
+          echo "Chmod and ldid"
           sudo chmod -R 755 JBEX/DEBIAN/*
+          ldid -EDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app/
+          ldid -EDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app/Frameworks/*
           echo "Replace version"
           sudo sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" DolphiniOS/BuildResources/DebFiles/control.in > JBEX/DEBIAN/control
           sudo plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" JBEX/Applications/DolphiniOS.app/Info.plist
