@@ -77,7 +77,7 @@ jobs:
           echo "dpkg"
           sudo dpkg-deb -b JBEX
           sudo mv JBEX.deb DolphiniOS-$VERSION_STRING-$BUILD_NUMBER.deb
-          echo "::set-env name=DebName::DolphiniOS-$VERSION_STRING-$BUILD_NUMBER.deb"
+          echo "::set-env name=DebName::DolphiniOS-$VERSION_STRING.deb"
           echo "Done"
            
       working-directory: ./Source/iOS/DolphiniOS
