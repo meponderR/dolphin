@@ -39,7 +39,7 @@ jobs:
            xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-njb.xcarchive -configuration "Debug (Non-Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
            cp -r DolphiniOS-njb.xcarchive/Products/Applications/ Payload/
            echo "Start Codesign"
-           ldid -SDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/
+           ldid -SDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/DolphiniOS
            ldid -SDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/Frameworks/*
            echo "End Codesign"
            zip -q -r ipas/Dolphin-njb.ipa Payload
@@ -69,7 +69,7 @@ jobs:
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
           echo "Chmod and ldid"
           sudo chmod -R 755 JBEX/DEBIAN/*
-          ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app
+          ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app/DolphiniOS
           ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app/Frameworks/*
           echo "Replace version"
           sudo sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" DolphiniOS/BuildResources/DebFiles/control.in > JBEX/DEBIAN/control
