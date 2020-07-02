@@ -67,9 +67,11 @@ jobs:
           echo "Copy deb files"
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
-          echo "Chmod and ldid"
+          echo "Chmod"
           sudo chmod -R 755 JBEX/DEBIAN/*
+          echo "ldid Executable File"
           ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app/DolphiniOS
+          echo "ldid Library Files"
           ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app/Frameworks/*
           echo "Replace version"
           sudo sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" DolphiniOS/BuildResources/DebFiles/control.in > JBEX/DEBIAN/control
