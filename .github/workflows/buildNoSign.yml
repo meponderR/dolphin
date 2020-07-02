@@ -70,9 +70,9 @@ jobs:
           echo "Chmod"
           sudo chmod -R 755 JBEX/DEBIAN/*
           echo "ldid Executable File"
-          ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app/DolphiniOS
+          ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist ./JBEX/Applications/DolphiniOS.app/DolphiniOS
           echo "ldid Library Files"
-          ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist JBEX/Applications/DolphiniOS.app/Frameworks/*
+          ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist ./JBEX/Applications/DolphiniOS.app/Frameworks/*
           echo "Replace version"
           sudo sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" DolphiniOS/BuildResources/DebFiles/control.in > JBEX/DEBIAN/control
           sudo plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" JBEX/Applications/DolphiniOS.app/Info.plist
