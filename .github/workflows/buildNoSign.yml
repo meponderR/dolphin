@@ -69,7 +69,7 @@ jobs:
 
           echo "Copy to Debian dir" 
           mkdir -p "JBEX/DEBIAN"
-          sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications" "JBEX/Applications"
+          sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications/DolphiniOS.app" "JBEX/Applications"
           echo "Copy Debian Files"
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
