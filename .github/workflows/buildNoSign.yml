@@ -25,24 +25,31 @@ jobs:
 
     - name: Setup Workspace
       run: |
+           # Remove Entitlements
            rm DolphiniOS/BuildResources/BuildScripts/UpdateEntitlements.sh
            touch DolphiniOS/BuildResources/BuildScripts/UpdateEntitlements.sh
            chmod 755 DolphiniOS/BuildResources/BuildScripts/UpdateEntitlements.sh
+           
+           # Copy Google Services
            curl https://cdn.oatmealdome.me/dolphinios/ipa/DolphiniOS-NJB-2.2.2-1.ipa -o dolphinr.ipa
            unzip -q dolphinr.ipa -d releaseipa/
            cp -r releaseipa/Payload/DolphiniOS.app/GoogleService-Info.plist DolphiniOS/GoogleService-Info.plist
-           mkdir ipas
+           
+           # Copy Entitlement Files
+           cp -r DolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist entn.xml
+           cp -r DolphiniOS/BuildResources/Entitlements_JB.plist ent.xml
       working-directory: ./Source/iOS/DolphiniOS
 
-    - name: Compile non-jailbroken ipa
+    - name: Compile non-jailbroken app
       run: |
            xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-njb.xcarchive -configuration "Debug (Non-Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
            cp -r DolphiniOS-njb.xcarchive/Products/Applications/ Payload/
-           echo "Start Codesign"
-           ldid -SDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/DolphiniOS
-           ldid -SDolphiniOS/BuildResources/Entitlements_PsychicPaper_Release.plist Payload/DolphiniOS.app/Frameworks/*
+           echo "ldid Executable File"
+           ldid -Sentn.xml Payload/DolphiniOS.app/DolphiniOS
+           echo "ldid Library Files"
+           ldid -Sentn.xml Payload/DolphiniOS.app/Frameworks/*
            echo "End Codesign"
-           zip -q -r ipas/Dolphin-njb.ipa Payload
+           zip -q -r Dolphin-njb.ipa Payload
            rm -r Payload/
       working-directory: ./Source/iOS/DolphiniOS
       
@@ -50,29 +57,28 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: DolphiniOS Beta (Non-Jailbroken)
-        path: Source/iOS/DolphiniOS/ipas/Dolphin-njb.ipa
+        path: Source/iOS/DolphiniOS/Dolphin-njb.ipa
       
-    - name: Compile jailbroken App
+    - name: Compile jailbroken app
       run: |
           xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-jb.xcarchive -configuration "Debug (Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
           
           BUNDLE_ID="me.oatmealdome.DolphiniOS"
           VERSION_STRING=$(cat DolphiniOS.xcodeproj/project.pbxproj | grep -m1 'MARKETING_VERSION' | cut -d'=' -f2 | tr -d ';' | tr -d ' ')
           BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "DolphiniOS/Info.plist")
-          
-          
-          echo "Copy to DEB dir" 
+
+          echo "Copy to Debian dir" 
           mkdir -p "JBEX/DEBIAN"
           sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications" "JBEX/Applications"
-          echo "Copy deb files"
+          echo "Copy Debian Files"
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
-          echo "Chmod"
+          echo "Chmod Debian Files"
           sudo chmod -R 755 JBEX/DEBIAN/*
           echo "ldid Executable File"
-          ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist ./JBEX/Applications/DolphiniOS.app/DolphiniOS
+          ldid -Sent.xml ./JBEX/Applications/DolphiniOS.app/DolphiniOS
           echo "ldid Library Files"
-          ldid -SDolphiniOS/BuildResources/Entitlements_JB.plist ./JBEX/Applications/DolphiniOS.app/Frameworks/*
+          ldid -Sent.xml ./JBEX/Applications/DolphiniOS.app/Frameworks/*
           echo "Replace version"
           sudo sed "s/VERSION_NUMBER/$VERSION_STRING-$BUILD_NUMBER/g" DolphiniOS/BuildResources/DebFiles/control.in > JBEX/DEBIAN/control
           sudo plutil -replace "CFBundleIdentifier" -string "$BUNDLE_ID" JBEX/Applications/DolphiniOS.app/Info.plist
