@@ -18,7 +18,7 @@ jobs:
       
     - name: Install dependencies
       run: |
-        brew install ninja bartycrouch dpkg libmagic ldid
+        brew install ninja bartycrouch dpkg libmagic ldid tree
         pip3 install polib python-magic
         pod install
       working-directory: ./Source/iOS/DolphiniOS
@@ -40,24 +40,24 @@ jobs:
            cp -r DolphiniOS/BuildResources/Entitlements_JB.plist ent.xml
       working-directory: ./Source/iOS/DolphiniOS
 
-    - name: Compile non-jailbroken app
-      run: |
-           xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-njb.xcarchive -configuration "Debug (Non-Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-           cp -r DolphiniOS-njb.xcarchive/Products/Applications/ Payload/
-           echo "ldid Executable File"
-           ldid -Sentn.xml Payload/DolphiniOS.app/DolphiniOS
-           echo "ldid Library Files"
-           ldid -Sentn.xml Payload/DolphiniOS.app/Frameworks/*
-           echo "End Codesign"
-           zip -q -r Dolphin-njb.ipa Payload
-           rm -r Payload/
-      working-directory: ./Source/iOS/DolphiniOS
+#    - name: Compile non-jailbroken app
+#      run: |
+#           xcodebuild archive -workspace DolphiniOS.xcworkspace -scheme DolphiniOS -archivePath DolphiniOS-njb.xcarchive -configuration "Debug (Non-Jailbroken)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+#           cp -r DolphiniOS-njb.xcarchive/Products/Applications/ Payload/
+#           echo "ldid Executable File"
+#           ldid -Sentn.xml Payload/DolphiniOS.app/DolphiniOS
+#           echo "ldid Library Files"
+#           ldid -Sentn.xml Payload/DolphiniOS.app/Frameworks/*
+#           echo "End Codesign"
+#           zip -q -r Dolphin-njb.ipa Payload
+#           rm -r Payload/
+#      working-directory: ./Source/iOS/DolphiniOS
       
-    - name: Upload non-jailbroken ipa
-      uses: actions/upload-artifact@v2
-      with:
-        name: DolphiniOS Beta (Non-Jailbroken)
-        path: Source/iOS/DolphiniOS/Dolphin-njb.ipa
+#    - name: Upload non-jailbroken ipa
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: DolphiniOS Beta (Non-Jailbroken)
+#        path: Source/iOS/DolphiniOS/Dolphin-njb.ipa
       
     - name: Compile jailbroken app
       run: |
