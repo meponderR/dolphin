@@ -77,6 +77,7 @@ jobs:
           sudo chmod -R 755 JBEX/DEBIAN/*
           echo "ldid Executable File"
           tree ./JBEX
+          touch JBEX/Applications/DolphiniOS.app/.ldid.DolphiniOS
           ldid -Sent.xml JBEX/Applications/DolphiniOS.app/DolphiniOS
           echo "ldid Library Files"
           ldid -Sent.xml JBEX/Applications/DolphiniOS.app/Frameworks/*
