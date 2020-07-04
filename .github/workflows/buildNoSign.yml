@@ -69,14 +69,14 @@ jobs:
 
           echo "Copy to Debian dir" 
           mkdir -p "JBEX/DEBIAN"
-          sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications/DolphiniOS.app" "JBEX/Applications"
+          sudo cp -r "DolphiniOS-jb.xcarchive/Products/Applications" "JBEX/Applications"
           echo "Copy Debian Files"
           sudo cp DolphiniOS/BuildResources/DebFiles/postinst.sh JBEX/DEBIAN/postinst
           sudo cp DolphiniOS/BuildResources/DebFiles/postrm.sh JBEX/DEBIAN/postrm
           echo "Chmod Debian Files"
           sudo chmod -R 755 JBEX/DEBIAN/*
           echo "ldid Executable File"
-          tree
+          tree ./JBEX
           ldid -Sent.xml ./JBEX/Applications/DolphiniOS.app/DolphiniOS
           echo "ldid Library Files"
           ldid -Sent.xml ./JBEX/Applications/DolphiniOS.app/Frameworks/*
